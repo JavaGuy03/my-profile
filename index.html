@@ -762,6 +762,131 @@
             filter: grayscale(1)
         }
 
+        /* ---------- certifications (Credly) ---------- */
+        .certs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-top: 0
+        }
+
+        .cert {
+            position: relative;
+            background: var(--layer);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: background .11s
+        }
+
+        .cert[hidden] {
+            display: none
+        }
+
+        .cert:hover {
+            background: var(--layer-hover)
+        }
+
+        .cert-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px
+        }
+
+        .cert-img {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            flex: none;
+            transition: transform .25s var(--ease)
+        }
+
+        .cert:hover .cert-img {
+            transform: scale(1.06)
+        }
+
+        .cert-lvl {
+            display: inline-flex;
+            align-items: center;
+            height: 24px;
+            padding: 0 10px;
+            font-size: .75rem;
+            letter-spacing: .32px;
+            background: var(--bg);
+            color: var(--text-2);
+            border: 1px solid var(--border)
+        }
+
+        .cert-lvl.inter {
+            background: var(--blue-tint);
+            color: var(--blue-text);
+            border-color: transparent
+        }
+
+        .cert h3 {
+            margin: 0;
+            font-weight: 400;
+            font-size: 1.0625rem;
+            line-height: 1.35;
+            color: var(--text)
+        }
+
+        .cert-iss {
+            margin: -8px 0 0;
+            font-size: .8125rem;
+            color: var(--text-2)
+        }
+
+        .cert-meta {
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: .75rem;
+            color: var(--text-2);
+            padding-right: 26px
+        }
+
+        .cert .go {
+            position: absolute;
+            right: 20px;
+            bottom: 14px;
+            width: 18px;
+            height: 18px;
+            color: var(--blue);
+            opacity: 0;
+            transform: translate(-6px, 6px);
+            transition: all .25s var(--ease)
+        }
+
+        .cert:hover .go {
+            opacity: 1;
+            transform: none
+        }
+
+        .certs-foot {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 24px;
+            color: var(--text-2);
+            font-size: .875rem
+        }
+
+        .certs-foot p {
+            margin: 0;
+            max-width: 520px
+        }
+
         /* ---------- education ---------- */
         .edu-grid {
             display: grid;
@@ -1511,6 +1636,33 @@
                 display: none
             }
 
+            /* certifications */
+            .certs-grid {
+                grid-template-columns: 1fr
+            }
+
+            .cert {
+                padding: 18px
+            }
+
+            .cert-img {
+                width: 60px;
+                height: 60px
+            }
+
+            .cert .go {
+                display: none
+            }
+
+            .certs-foot {
+                flex-direction: column;
+                align-items: stretch
+            }
+
+            .certs-foot .btn {
+                width: 100%
+            }
+
             /* education + languages */
             .edu {
                 padding: 20px;
@@ -1679,6 +1831,18 @@
                 opacity: 0
             }
 
+            .cert:hover {
+                background: var(--layer)
+            }
+
+            .cert:hover .cert-img {
+                transform: none
+            }
+
+            .cert:hover .go {
+                opacity: 0
+            }
+
             .edu:hover,
             .lang:hover {
                 background: var(--layer)
@@ -1747,6 +1911,7 @@
             <nav class="links" id="mainNav" aria-label="Main">
                 <a href="#focus">Focus</a>
                 <a href="#stack">Tech stack</a>
+                <a href="#certifications">Certifications</a>
                 <a href="#education">Education</a>
                 <a href="#languages">Languages</a>
 
@@ -1859,6 +2024,34 @@
                     <button type="button" data-f="run" aria-pressed="false">Run &amp; store</button>
                 </div>
                 <div class="wall" id="wall"></div>
+            </div>
+        </section>
+
+        <!-- ================= CERTIFICATIONS ================= -->
+        <section id="certifications" style="padding-top:24px">
+            <div class="wrap">
+                <div class="sec-head" data-reveal>
+                    <div class="tag-line">Certifications</div>
+                    <h2>Credly &amp; Confluent</h2>
+                    <p>Verified IBM and Confluent credentials from Credly and Accredible. Select any badge to inspect and
+                        verify it.</p>
+                </div>
+                <div class="tabs" id="certTabs" role="group" aria-label="Filter certifications" data-reveal>
+                    <button type="button" data-f="all" aria-pressed="true">All (13)</button>
+                    <button type="button" data-f="iss:IBM" aria-pressed="false">IBM (11)</button>
+                    <button type="button" data-f="iss:Confluent" aria-pressed="false">Confluent (2)</button>
+                    <button type="button" data-f="lvl:Intermediate" aria-pressed="false">Intermediate (4)</button>
+                    <button type="button" data-f="lvl:Foundational" aria-pressed="false">Foundational (7)</button>
+                </div>
+                <div class="certs-grid" id="certsGrid"></div>
+                <div class="certs-foot" data-reveal>
+                    <p>11 active badges from my public Credly profile and 2 Confluent certifications verified via
+                        Accredible.</p>
+                    <a class="btn ter" href="https://www.credly.com/users/dinh-hoang.e6828f59" target="_blank"
+                        rel="noopener">Credly profile <svg class="arrow" viewBox="0 0 32 32" fill="currentColor">
+                            <path d="M18 6l-1.43 1.393L24.15 15H4v2h20.15l-7.58 7.573L18 26l10-10L18 6z" />
+                        </svg></a>
+                </div>
             </div>
         </section>
 
@@ -2004,6 +2197,16 @@
                         <svg width="24" height="24" viewBox="0 0 32 32" fill="currentColor">
                             <path d="M10 6v2h12.59L6 24.59 7.41 26 24 9.41V22h2V6H10z" />
                         </svg></a>
+                    <a class="crow" href="https://www.credly.com/users/dinh-hoang.e6828f59" target="_blank"
+                        rel="noopener"><i class="ci"><svg class="brand-ic" width="28" height="28" viewBox="0 0 24 24"
+                                aria-hidden="true">
+                                <rect width="24" height="24" rx="3" fill="#FF6B00" />
+                                <path fill="#fff"
+                                    d="M12.5 5.5a6.5 6.5 0 1 0 4.6 11.1l-1.9-1.9a3.8 3.8 0 1 1 0-5.4l1.9-1.9A6.47 6.47 0 0 0 12.5 5.5z" />
+                            </svg></i>Credly <span>dinh-hoang.e6828f59</span>
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="currentColor">
+                            <path d="M10 6v2h12.59L6 24.59 7.41 26 24 9.41V22h2V6H10z" />
+                        </svg></a>
                     <a class="crow" href="https://zalo.me/0913513395" target="_blank" rel="noopener"><i class="ci"><svg
                                 class="brand-ic" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
                                 <path fill="#0068FF"
@@ -2110,11 +2313,66 @@
                     const t = T[k];
                     return '<a class="cell" href="' + t.u + '" target="_blank" rel="noopener" aria-label="' + t.n + ' (opens in a new tab)" data-g="' + t.g + '" data-reveal style="--d:' + ((i++) % 8) + '"><small>' + GROUP[t.g] + '</small><div>' + logo(k, 48) + '<strong>' + t.n + '</strong></div>' + arrow + '</a>';
                 }).join('');
-                const btns = $$('.tabs button');
+                const btns = $$('#stack .tabs button');
                 btns.forEach(b => b.addEventListener('click', () => {
                     btns.forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
                     const f = b.dataset.f;
                     $$('.cell', wall).forEach(c => c.classList.toggle('dim', f !== 'all' && c.dataset.g !== f));
+                }));
+            })();
+
+            /* ---------- certifications (Credly & Confluent) ---------- */
+            (function () {
+                const grid = $('#certsGrid'); if (!grid) return;
+                const confSvg = (sub) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112">'
+                    + '<polygon points="50,3 96,29 96,83 50,109 4,83 4,29" fill="#13163b" stroke="#4c56c0" stroke-width="4"/>'
+                    + '<text x="50" y="29" text-anchor="middle" fill="#a6b1ff" font-family="Arial,sans-serif" font-size="7.5" font-weight="700" letter-spacing="1">CONFLUENT</text>'
+                    + '<text x="50" y="45" text-anchor="middle" fill="#ffffff" font-family="Arial,sans-serif" font-size="8.5" font-weight="600">Data Streaming</text>'
+                    + '<text x="50" y="56" text-anchor="middle" fill="#ffffff" font-family="Arial,sans-serif" font-size="8.5" font-weight="600">Engineer</text>'
+                    + '<rect x="16" y="65" width="68" height="16" rx="3" fill="#4f46e5"/>'
+                    + '<text x="50" y="76" text-anchor="middle" fill="#ffffff" font-family="Arial,sans-serif" font-size="7.5" font-weight="700">' + sub + '</text>'
+                    + '</svg>'
+                );
+                const CERTS = [
+                    { u: 'https://certificates.confluent.io/c810313b-c157-4787-a735-30868ce7ada9#acc.Sh6FP1Y8', n: 'Data Streaming Engineer - Apache Flink®', iss: 'Confluent', lvl: 'Certified', at: null, exp: null, img: confSvg('APACHE FLINK') },
+                    { u: 'https://certificates.confluent.io/04c735ed-7cf1-4a3e-b571-7e0eaedbf256#acc.zYb592hn', n: 'Data Streaming Engineer Foundations', iss: 'Confluent', lvl: 'Certified', at: null, exp: null, img: confSvg('FOUNDATIONS') },
+                    { id: 'cfc825f1-4e0c-4cb2-80a1-9565f48204c4', n: 'Verify Identity Protection Sales Foundation', iss: 'IBM', lvl: 'Foundational', at: '2026-11-10', exp: '2027-11-10', img: 'https://images.credly.com/images/c15df925-6d54-460e-8ef6-c1f2cb0d4fb3/Verify_20Identity_20Protection_20Sales_20Foundation.png' },
+                    { id: '5a503167-42a0-4586-bb2b-985153a08566', n: 'Confluent Intermediate', iss: 'IBM', lvl: 'Intermediate', at: '2026-08-14', exp: '2027-08-14', img: 'https://images.credly.com/images/632f7942-ba70-4fb1-8804-1ac3b269f7ac/Confluent.png' },
+                    { id: '821aa0cb-a7f2-4942-ab61-1c05d50c6bef', n: 'Confluent Sales Foundation', iss: 'IBM', lvl: 'Foundational', at: '2026-08-14', exp: '2027-08-14', img: 'https://images.credly.com/images/92f13243-4f6e-49cb-88a5-e367070eef97/Confluent.png' },
+                    { id: 'ecd4f313-d5dd-41f1-b10d-ccd8174dbd71', n: 'API Connect Sales Foundation', iss: 'IBM', lvl: 'Foundational', at: '2026-08-10', exp: '2027-08-10', img: 'https://images.credly.com/images/847935d3-b501-4d3f-a326-e033d6ec033c/API_20Connect_20Sales_20Foundation.png' },
+                    { id: '509d9a51-8df1-4790-ad9d-701b01ca7501', n: 'IBM API Connect Technical Sales Intermediate', iss: 'IBM', lvl: 'Intermediate', at: '2026-08-06', exp: '2027-08-06', img: 'https://images.credly.com/images/4b9da6dd-9036-45d4-a3a9-3397b55002b2/blob' },
+                    { id: 'c0bf4390-7d20-4ac3-afce-5c5307e22f66', n: 'IBM Bob Intermediate', iss: 'IBM', lvl: 'Intermediate', at: '2026-07-14', exp: '2027-07-14', img: 'https://images.credly.com/images/df4fe6f4-2060-45d4-9a09-160688785dbc/IBM_Bob_TS_Intermediate.png' },
+                    { id: '5c46b854-8687-4c8d-810a-9e72fd8d8f55', n: 'IBM App Connect Enterprise 12 Application Development I', iss: 'IBM', lvl: 'Intermediate', at: '2026-06-30', exp: null, img: 'https://images.credly.com/images/dd6ceafc-1fd9-4fe6-820e-531634f09106/image.png' },
+                    { id: '7c4a057d-466b-47de-ae5f-6594cc191282', n: 'IBM App Connect Enterprise as a Service Essentials', iss: 'IBM', lvl: 'Foundational', at: '2026-06-30', exp: null, img: 'https://images.credly.com/images/067c329a-d86c-4e51-adc5-e4586d63cdcb/image.png' },
+                    { id: '90b1e12f-5110-415c-9f40-c18b910962ab', n: 'IBM Event Streams Developer Essentials', iss: 'IBM', lvl: 'Foundational', at: '2026-06-30', exp: null, img: 'https://images.credly.com/images/5b87a0f8-bb4e-4fe9-adbd-7fd6145398df/image.png' },
+                    { id: '0f6e25dd-ec21-46fc-b2d0-3654ef49312a', n: 'IBM MQ Developer Essentials', iss: 'IBM', lvl: 'Foundational', at: '2026-06-30', exp: null, img: 'https://images.credly.com/images/2d2deb7d-54a4-4bbd-aae2-66747e916227/image.png' },
+                    { id: '5a329f5f-dca8-4c66-8f43-22617ee85ab5', n: 'Deploying Containerized Applications on IBM Power', iss: 'IBM', lvl: 'Foundational', at: '2026-06-18', exp: null, img: 'https://images.credly.com/images/197666fb-b290-4065-bf42-254550863f9b/image.png' }
+                ];
+                const arrow = '<svg class="go" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M18 6l-1.43 1.393L24.15 15H4v2h20.15l-7.58 7.573L18 26l10-10L18 6z"/></svg>';
+                const fmtDate = s => new Date(s + 'T00:00:00').toLocaleDateString('en', { month: 'short', year: 'numeric' });
+                grid.innerHTML = CERTS.map((c, i) => {
+                    const href = c.u || ('https://www.credly.com/badges/' + c.id);
+                    const cls = (c.lvl === 'Intermediate' || c.lvl === 'Certified') ? 'cert-lvl inter' : 'cert-lvl';
+                    const left = c.at ? 'Issued ' + fmtDate(c.at) : 'Verified credential';
+                    const right = c.at ? (c.exp ? 'Expires ' + fmtDate(c.exp) : 'No expiration') : 'Accredible';
+                    return '<a class="cert" href="' + href + '" target="_blank" rel="noopener" aria-label="' + c.n + ' (verify credential)" data-iss="' + c.iss + '" data-lvl="' + c.lvl + '" data-reveal style="--d:' + (i % 6) + '">'
+                        + '<div class="cert-top"><img class="cert-img" src="' + c.img + '" alt="' + c.n + ' badge" loading="lazy"><span class="' + cls + '">' + c.lvl + '</span></div>'
+                        + '<h3>' + c.n + '</h3>'
+                        + '<p class="cert-iss">Issued by ' + c.iss + '</p>'
+                        + '<div class="cert-meta"><span>' + left + '</span><span>' + right + '</span></div>'
+                        + arrow + '</a>';
+                }).join('');
+
+                const cBtns = $$('#certTabs button');
+                cBtns.forEach(b => b.addEventListener('click', () => {
+                    cBtns.forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+                    const f = b.dataset.f;
+                    $$('.cert', grid).forEach(card => {
+                        if (f === 'all') { card.hidden = false; return; }
+                        const [k, v] = f.split(':');
+                        card.hidden = card.dataset[k] !== v;
+                    });
                 }));
             })();
 
