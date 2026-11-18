@@ -1,0 +1,75 @@
+name: Sync Credly Badges
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch Credly badges
+        run: |
+          python3 - <<'EOF'
+          import json
+          import urllib.request
+
+          USER = "dinh-hoang.e6828f59"
+          items = []
+          page = 1
+
+          while True:
+              url = f"https://www.credly.com/users/{USER}/badges.json?page={page}"
+              req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "github-actions"})
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  payload = json.loads(resp.read().decode("utf-8"))
+
+              for b in payload.get("data", []):
+                  if b.get("state") != "accepted" or b.get("is_private_badge"):
+                      continue
+                  bt = b.get("badge_template") or {}
+                  entities = (b.get("issuer") or {}).get("entities") or []
+                  primary = next((e for e in entities if e.get("primary")), entities[0] if entities else {})
+                  iss = (primary.get("entity") or {}).get("name") or "Credly"
+                  items.append({
+                      "id": b.get("id"),
+                      "n": bt.get("name"),
+                      "iss": iss,
+                      "lvl": bt.get("level") or "Certified",
+                      "at": b.get("issued_at_date"),
+                      "exp": b.get("expires_at_date"),
+                      "img": b.get("image_url") or bt.get("image_url"),
+                  })
+
+              meta = payload.get("metadata") or {}
+              if page >= (meta.get("total_pages") or 1):
+                  break
+              page += 1
+
+          if not items:
+              raise SystemExit("No badges returned from Credly; aborting to keep existing data.")
+
+          with open("credly-badges.json", "w", encoding="utf-8") as f:
+              json.dump(items, f, indent=2, ensure_ascii=False)
+              f.write("\n")
+          print(f"Synced {len(items)} Credly badges.")
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet credly-badges.json; then
+            echo "No changes to credly-badges.json"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add credly-badges.json
+          git commit -m "chore: sync Credly badges"
+          git push

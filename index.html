@@ -2042,16 +2042,15 @@
                         verify it.</p>
                 </div>
                 <div class="tabs" id="certTabs" role="group" aria-label="Filter certifications" data-reveal>
-                    <button type="button" data-f="all" aria-pressed="true">All (13)</button>
-                    <button type="button" data-f="iss:IBM" aria-pressed="false">IBM (11)</button>
-                    <button type="button" data-f="iss:Confluent" aria-pressed="false">Confluent (2)</button>
-                    <button type="button" data-f="lvl:Intermediate" aria-pressed="false">Intermediate (4)</button>
-                    <button type="button" data-f="lvl:Foundational" aria-pressed="false">Foundational (7)</button>
+                    <button type="button" data-f="all" aria-pressed="true">All</button>
+                    <button type="button" data-f="iss:IBM" aria-pressed="false">IBM</button>
+                    <button type="button" data-f="iss:Confluent" aria-pressed="false">Confluent</button>
+                    <button type="button" data-f="lvl:Intermediate" aria-pressed="false">Intermediate</button>
+                    <button type="button" data-f="lvl:Foundational" aria-pressed="false">Foundational</button>
                 </div>
                 <div class="certs-grid" id="certsGrid"></div>
                 <div class="certs-foot" data-reveal>
-                    <p>11 active badges from my public Credly profile and 2 Confluent certifications verified via
-                        Accredible.</p>
+                    <p id="certsNote">Verified credentials from Credly and Accredible.</p>
                     <a class="btn ter" href="https://www.credly.com/users/dinh-hoang.e6828f59" target="_blank"
                         rel="noopener">Credly profile <svg class="arrow" viewBox="0 0 32 32" fill="currentColor">
                             <path d="M18 6l-1.43 1.393L24.15 15H4v2h20.15l-7.58 7.573L18 26l10-10L18 6z" />
@@ -2329,6 +2328,7 @@
             /* ---------- certifications (Credly & Confluent) ---------- */
             (function () {
                 const grid = $('#certsGrid'); if (!grid) return;
+                const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
                 const confSvg = (sub) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
                     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112">'
                     + '<polygon points="50,3 96,29 96,83 50,109 4,83 4,29" fill="#13163b" stroke="#4c56c0" stroke-width="4"/>'
@@ -2339,9 +2339,11 @@
                     + '<text x="50" y="76" text-anchor="middle" fill="#ffffff" font-family="Arial,sans-serif" font-size="7.5" font-weight="700">' + sub + '</text>'
                     + '</svg>'
                 );
-                const CERTS = [
+                const CONFLUENT_CERTS = [
                     { u: 'https://certificates.confluent.io/c810313b-c157-4787-a735-30868ce7ada9#acc.Sh6FP1Y8', n: 'Data Streaming Engineer - Apache Flink®', iss: 'Confluent', lvl: 'Certified', at: null, exp: null, img: confSvg('APACHE FLINK') },
-                    { u: 'https://certificates.confluent.io/04c735ed-7cf1-4a3e-b571-7e0eaedbf256#acc.zYb592hn', n: 'Data Streaming Engineer Foundations', iss: 'Confluent', lvl: 'Certified', at: null, exp: null, img: confSvg('FOUNDATIONS') },
+                    { u: 'https://certificates.confluent.io/04c735ed-7cf1-4a3e-b571-7e0eaedbf256#acc.zYb592hn', n: 'Data Streaming Engineer Foundations', iss: 'Confluent', lvl: 'Certified', at: null, exp: null, img: confSvg('FOUNDATIONS') }
+                ];
+                const FALLBACK_CREDLY = [
                     { id: 'cfc825f1-4e0c-4cb2-80a1-9565f48204c4', n: 'Verify Identity Protection Sales Foundation', iss: 'IBM', lvl: 'Foundational', at: '2026-11-10', exp: '2027-11-10', img: 'https://images.credly.com/images/c15df925-6d54-460e-8ef6-c1f2cb0d4fb3/Verify_20Identity_20Protection_20Sales_20Foundation.png' },
                     { id: '5a503167-42a0-4586-bb2b-985153a08566', n: 'Confluent Intermediate', iss: 'IBM', lvl: 'Intermediate', at: '2026-08-14', exp: '2027-08-14', img: 'https://images.credly.com/images/632f7942-ba70-4fb1-8804-1ac3b269f7ac/Confluent.png' },
                     { id: '821aa0cb-a7f2-4942-ab61-1c05d50c6bef', n: 'Confluent Sales Foundation', iss: 'IBM', lvl: 'Foundational', at: '2026-08-14', exp: '2027-08-14', img: 'https://images.credly.com/images/92f13243-4f6e-49cb-88a5-e367070eef97/Confluent.png' },
@@ -2356,29 +2358,61 @@
                 ];
                 const arrow = '<svg class="go" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M18 6l-1.43 1.393L24.15 15H4v2h20.15l-7.58 7.573L18 26l10-10L18 6z"/></svg>';
                 const fmtDate = s => new Date(s + 'T00:00:00').toLocaleDateString('en', { month: 'short', year: 'numeric' });
-                grid.innerHTML = CERTS.map((c, i) => {
-                    const href = c.u || ('https://www.credly.com/badges/' + c.id);
-                    const cls = (c.lvl === 'Intermediate' || c.lvl === 'Certified') ? 'cert-lvl inter' : 'cert-lvl';
-                    const left = c.at ? 'Issued ' + fmtDate(c.at) : 'Verified credential';
-                    const right = c.at ? (c.exp ? 'Expires ' + fmtDate(c.exp) : 'No expiration') : 'Accredible';
-                    return '<a class="cert" href="' + href + '" target="_blank" rel="noopener" aria-label="' + c.n + ' (verify credential)" data-iss="' + c.iss + '" data-lvl="' + c.lvl + '" data-reveal style="--d:' + (i % 6) + '">'
-                        + '<div class="cert-top"><img class="cert-img" src="' + c.img + '" alt="' + c.n + ' badge" loading="lazy"><span class="' + cls + '">' + c.lvl + '</span></div>'
-                        + '<h3>' + c.n + '</h3>'
-                        + '<p class="cert-iss">Issued by ' + c.iss + '</p>'
-                        + '<div class="cert-meta"><span>' + left + '</span><span>' + right + '</span></div>'
-                        + arrow + '</a>';
-                }).join('');
-
                 const cBtns = $$('#certTabs button');
-                cBtns.forEach(b => b.addEventListener('click', () => {
-                    cBtns.forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
-                    const f = b.dataset.f;
+                const note = $('#certsNote');
+                let activeFilter = 'all';
+
+                function applyFilter(f) {
+                    activeFilter = f;
+                    cBtns.forEach(x => x.setAttribute('aria-pressed', x.dataset.f === f ? 'true' : 'false'));
                     $$('.cert', grid).forEach(card => {
                         if (f === 'all') { card.hidden = false; return; }
                         const [k, v] = f.split(':');
                         card.hidden = card.dataset[k] !== v;
                     });
-                }));
+                }
+
+                function renderCerts(credlyList, animateIn) {
+                    const all = [...CONFLUENT_CERTS, ...credlyList];
+                    grid.innerHTML = all.map((c, i) => {
+                        const href = c.u || ('https://www.credly.com/badges/' + c.id);
+                        const cls = (c.lvl === 'Intermediate' || c.lvl === 'Certified') ? 'cert-lvl inter' : 'cert-lvl';
+                        const left = c.at ? 'Issued ' + fmtDate(c.at) : 'Verified credential';
+                        const right = c.at ? (c.exp ? 'Expires ' + fmtDate(c.exp) : 'No expiration') : 'Accredible';
+                        const revCls = animateIn ? 'cert in' : 'cert';
+                        return '<a class="' + revCls + '" href="' + esc(href) + '" target="_blank" rel="noopener" aria-label="' + esc(c.n) + ' (verify credential)" data-iss="' + esc(c.iss) + '" data-lvl="' + esc(c.lvl) + '" data-reveal style="--d:' + (i % 6) + '">'
+                            + '<div class="cert-top"><img class="cert-img" src="' + esc(c.img) + '" alt="' + esc(c.n) + ' badge" loading="lazy"><span class="' + cls + '">' + esc(c.lvl) + '</span></div>'
+                            + '<h3>' + esc(c.n) + '</h3>'
+                            + '<p class="cert-iss">Issued by ' + esc(c.iss) + '</p>'
+                            + '<div class="cert-meta"><span>' + esc(left) + '</span><span>' + esc(right) + '</span></div>'
+                            + arrow + '</a>';
+                    }).join('');
+
+                    cBtns.forEach(b => {
+                        const f = b.dataset.f;
+                        const label = b.dataset.label || b.textContent.replace(/\s*\(\d+\)$/, '');
+                        b.dataset.label = label;
+                        let count = all.length;
+                        if (f !== 'all') {
+                            const [k, v] = f.split(':');
+                            count = all.filter(c => c[k] === v).length;
+                        }
+                        b.textContent = label + ' (' + count + ')';
+                        b.hidden = f !== 'all' && count === 0;
+                    });
+                    if (note) {
+                        note.textContent = credlyList.length + ' active badges from my public Credly profile and ' + CONFLUENT_CERTS.length + ' Confluent certifications verified via Accredible.';
+                    }
+                    applyFilter(activeFilter);
+                }
+
+                cBtns.forEach(b => b.addEventListener('click', () => applyFilter(b.dataset.f)));
+                renderCerts(FALLBACK_CREDLY, false);
+
+                fetch('./credly-badges.json', { cache: 'no-cache' })
+                    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+                    .then(list => { if (Array.isArray(list) && list.length) renderCerts(list, true); })
+                    .catch(() => { /* fallback data already rendered */ });
             })();
 
             /* education logos: show the placeholder badge if the file is not there yet */
